@@ -12,14 +12,14 @@ interface Head {
 }
 
 export const returns = {
-  200:(body='', header={})=>code(200,body, header),
-  302:(redirect: string, url='/' )=>code(302,'', {location:redirect+url}),
-  400:(message=''        )=>code(400,message),
-  401:(message=''        )=>code(401,message),
-  404:(message='Not Found\n'      )=>code(404,message),
-  409:(message='Duplicate\n'      )=>code(409,message),
-  500:(message='Sorry.\n'         )=>code(500,message),
-  501:(message='Not Implemented\n')=>code(501,message),
+  200:(body?='', header?={})=>code(200,body, header),
+  302:(redirect: string, url?='/' )=>code(302,'', {location:redirect+url}),
+  400:(message?=''        )=>code(400,message),
+  401:(message?=''        )=>code(401,message),
+  404:(message?='Not Found\n'      )=>code(404,message),
+  409:(message?='Duplicate\n'      )=>code(409,message),
+  500:(message?='Sorry.\n'         )=>code(500,message),
+  501:(message?='Not Implemented\n')=>code(501,message),
   www:   readFile,
   file:  readFile,
   js302,
@@ -27,7 +27,7 @@ export const returns = {
   getMime,
 }
 
-function code(statusCode: number=500, body: string='', head: Head={}): FileResponse {
+function code(statusCode: number?=500, body: string?='', head: Head?={}): FileResponse {
   const headers = new Headers()
   headers.set('content-length', String(body.length))
   for(let header in head){
