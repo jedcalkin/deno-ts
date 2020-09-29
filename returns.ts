@@ -36,12 +36,12 @@ function code(statusCode: number?=500, body: string?='', head: Head?={}): FileRe
   return { statusCode, headers, body }
 }
 
-function js302(redirect: string, url: string='/'): FileResponse {
+function js302(redirect: string, url: string?='/'): FileResponse {
   return code(200,`<html><script>window.location.href = "${redirect+url}"</script><body style="background:#000"></body></html>\n`)
 }
 
 // read a file from disk
-async function readFile(root: string, path: string, gz: boolean=true): Promise<FileResponse> {
+async function readFile(root: string, path: string, gz: boolean?=true): Promise<FileResponse> {
   path = path.split('?')[0]
   try{
     let file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
@@ -62,7 +62,7 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
     }
     if(!path.endsWith('/index.html')){
       return await readFile(root, path+'/index.html')
-    }
+    }https://github.com/jedcalkin/deno-ts/blob/master/returns.ts
     try{
       return code( 404, await Deno.readTextFile(root+'/404.html'))
     } catch(e){
