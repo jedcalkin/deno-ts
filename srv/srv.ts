@@ -35,6 +35,9 @@ const CONFIG = {
   excludes: config.excludes || excludes,
   verbose: config.v || false
 }
+if(config.index) {
+    CONFIG.overrides['/'] = config.index
+}
 
 if(CONFIG.verbose) { log(CONFIG) }
 
