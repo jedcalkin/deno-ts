@@ -14,6 +14,7 @@ interface Args {
       if(value){
         cmdArgs[key] = value
         value = false
+        continue
       }
       if(arg.startsWith('--')){
         let [k, v] = arg.split('=')
@@ -22,6 +23,14 @@ interface Args {
           cmdArgs[key] = v
         } else {
           value = true
+        }
+        continue
+      }
+      if(arg.startsWith('-')){
+        let flags = arg.split('')
+        for(const f of flags){
+          if(f=='-'){ continue }
+          cmdArgs[f] = true
         }
       }
     }
