@@ -46,7 +46,9 @@ interface Args {
     if(cmdArgs.config){
       try {
         configStr = await get(cmdArgs.config)
-      } catch(e) {}
+      } catch(err) {
+        console.log(err)
+      }
     }
   }
 

@@ -1,9 +1,7 @@
 const log = console.log
 
 import { serve } from 'https://deno.land/std/http/server.ts'
-import {
-  acceptWebSocket, isWebSocketCloseEvent, isWebSocketPingEvent, WebSocket
-} from "https://deno.land/std/ws/mod.ts";
+import { acceptWebSocket, WebSocket } from "https://deno.land/std/ws/mod.ts";
 import { returns } from 'https://jedcalkin.github.io/deno-ts/returns.ts'
 
 const config = JSON.parse(Deno.readTextFileSync('./config.json'));

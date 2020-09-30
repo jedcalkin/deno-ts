@@ -84,7 +84,7 @@ export const mimes: Mimes = {
   js:'application/javascript',
   vue:'application/javascript',
   json:'application/json',
-  //ico:'image/x-icon',
+  ico:'image/x-icon',
   svg:'image/svg+xml',
 
   // media

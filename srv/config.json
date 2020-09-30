@@ -1,0 +1,20 @@
+{
+  "fileRoot": "./www",
+  "port": 8070,
+  "hostname": "localhost",
+  "ws": "/ws",
+  "gz": false,
+  "v": true,
+  "overrides": {
+    "/": "/index.html",
+    "/favicon.ico": "https://jedc.nz/favicon.ico"
+  },
+  "excludes": [
+    "\\.php$",
+    "\\.jsp$",
+    "\\.asp$",
+    "\\.xml$",
+    "\\.git/",
+    "/\\.\\./"
+  ]
+}
