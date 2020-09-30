@@ -12,7 +12,7 @@ interface Args {
     let value: boolean = false
     for(const arg of Deno.args) {
       if(value){
-        cmdArgs[key] = value
+        cmdArgs[key] = arg
         value = false
         continue
       }
@@ -32,6 +32,11 @@ interface Args {
           if(f=='-'){ continue }
           cmdArgs[f] = true
         }
+        continue
+      }
+      let [k, v] = arg.split('=')
+      if(v){
+        cmdArgs[k] = v
       }
     }
   }
