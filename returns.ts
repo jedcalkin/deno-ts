@@ -62,7 +62,7 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
     }
     if(!path.endsWith('/index.html')){
       return await readFile(root, path+'/index.html')
-    }https://github.com/jedcalkin/deno-ts/blob/master/returns.ts
+    }
     try{
       return code( 404, await Deno.readTextFile(root+'/404.html'))
     } catch(e){
@@ -72,8 +72,8 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
 }
 
 function getMime(path: string): string | undefined {
-  const extention = path.split('.').pop() || 'none'
-  return mimes[extention]
+  const extension = path.split('.').pop() || 'none'
+  return mimes[extension]
 }
 
 export const mimes: Mimes = {
