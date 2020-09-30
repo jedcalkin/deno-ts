@@ -5,7 +5,6 @@ import {
   acceptWebSocket, isWebSocketCloseEvent, isWebSocketPingEvent, WebSocket
 } from "https://deno.land/std/ws/mod.ts";
 import { returns } from 'https://jedcalkin.github.io/deno-ts/returns.ts'
-//import { returns } from './returns.ts'
 
 const config = JSON.parse(Deno.readTextFileSync('./config.json'));
 
