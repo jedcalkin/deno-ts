@@ -55,7 +55,7 @@ loading config from local or remote
 # srv
 a http & ws file server
 ```
-deno run --allow-net=localhost,jedc.nz --allow-read\
+deno run --allow-net=localhost,jedc.nz --allow-read \
 "https://jedcalkin.github.io/deno-ts/srv/srv.ts"\
 config=https://jedcalkin.github.io/deno-ts/srv/config.json
 ```
