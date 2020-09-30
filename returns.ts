@@ -47,9 +47,9 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
     let file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
 
     let header: Head = {}
-    const extention = path.split('.').pop() || 'none'
-    const type = mimes[extention]
-    if(type!=null && extention.length<=6){
+    const extension = path.split('.').pop() || 'none'
+    const type = mimes[extension]
+    if(type!=null && extension.length<=6){
       header['Content-Type'] = type
     }
     if(gz){
@@ -72,8 +72,8 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
 }
 
 function getMime(path: string): string | undefined {
-  const extention = path.split('.').pop() || 'none'
-  return mimes[extention]
+  const extension = path.split('.').pop() || 'none'
+  return mimes[extension]
 }
 
 export const mimes: Mimes = {
