@@ -12,3 +12,9 @@ curl https://jedcalkin.github.io/deno-ts/multi-ui/install.sh | sh
 # returns
 an easy way to return statusCode, headers or body
 in your deno server
+
+# walk
+generate a JSON object from a folder structure
+```
+deno run --alow-read=. "https://jedcalkin.github.io/deno-ts/walk/walk.ts" > tree.json
+```
