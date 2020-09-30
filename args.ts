@@ -4,7 +4,7 @@ interface Args {
   [arg: string]: any
 }
 
- export default async function(config: Args): Promise<Args> {
+ export default async function(config: Args={}): Promise<Args> {
   
   cli_args: {
     var cmdArgs: Args = {}

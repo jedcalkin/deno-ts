@@ -1,7 +1,7 @@
 const log = console.log
 
 import { getTree } from "https://jedcalkin.github.io/deno-ts/walk/get-tree.ts"
-import { args } from "https://jedcalkin.github.io/deno-ts/walk/args.ts"
+import args from "https://jedcalkin.github.io/deno-ts/args.ts"
 
 const config = args()
 
