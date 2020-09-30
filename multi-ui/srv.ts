@@ -1,6 +1,9 @@
 const log = console.log
 
 import { serve } from 'https://deno.land/std/http/server.ts'
+import {
+  acceptWebSocket, isWebSocketCloseEvent, isWebSocketPingEvent, WebSocket
+} from "https://deno.land/std/ws/mod.ts";
 import { returns } from 'https://jedcalkin.github.io/deno-ts/returns.ts'
 //import { returns } from './returns.ts'
 
@@ -10,60 +13,61 @@ const port: number = config.port || 12120
 const hostname: string = config.host || 'localhost'
 
 const pages: {
-  [path: string]: boolean
-} = {}
-const home = `/${config.pages[0]}` || '/index.html'
-for (const page of config.pages){ pages[`/${page}`] = true }
-// log([home])
-// log(pages)
+  [urlPath: string]: string;
+} = config.pages || {
+  '/': './srv.ts'
+}
 
-const server = serve({ hostname, port })
-
-log(`on http://localhost:${port}/`)
-
-for await (const req of server){
-    if(req.url == '/'){
-      const x = await returns.file('.', home, false)
-      req.respond(x)
-      continue
+async function handle(req: any){
+    if(req.url == '/ws'){
+      const { conn, r: bufReader, w: bufWriter, headers } = req;
+      try {
+        const socket = await acceptWebSocket({ conn, bufReader, bufWriter, headers })
+        events(socket)
+      } catch (err){
+        console.error(`failed to accept websocket: ${err}`);
+        await req.respond({ status: 400 });
+      }
+      return
     }
+    // log(pages[req.url])
     if(pages[req.url]) {
-      req.respond(await returns.file('.', req.url, false))
-      continue
+      req.respond(await returns.file('./', pages[req.url], false))
+      return
     }
     req.respond(returns[404]())
 }
 
+const connections: {[uid: string]: WebSocket } = {}
 
-interface Mimes {
-  [ext: string]: string;
+async function events(socket: WebSocket) {
+  const uid = (Math.random()*36**5).toString(36).toUpperCase()
+  connections[uid] = socket
+  try {
+    for await (const event of socket) {
+      if (typeof event != 'string') { continue }
+      // log(event)
+      for(const c in connections){
+        if(c == uid){ continue }
+        if(connections && connections[c] == undefined ){ continue }
+        try {
+          await connections[c].send(event);
+        } catch (err) {
+          delete(connections[uid])
+        }
+      }
+    }
+  } catch (err) {
+    console.error(`failed to receive frame: ${err}`);
+    if (!socket.isClosed) {
+      delete(connections[uid])
+      await socket.close(1000).catch(console.error);
+    }
+  }
 }
-export const mimes: Mimes = {
-  html:'text/html',
-  page:'text/html',
-  css:'text/css',
-  csv:'text/csv',
-  js:'application/javascript',
-  vue:'application/javascript',
-  json:'application/json',
-  //ico:'image/x-icon',
-  svg:'image/svg+xml',
 
-  // media
-  bmp:'image/bmp',
-  png:'image/png',
-  jpg:'image/jpeg',
-  gif:'image/gif',
-
-  webm:'video/webm',
-  mp4:'video/mp4',
-  avi:'video/x-msvideo',
-  flv:'video/x-flv',
-
-  // others
-  stl:'application/x-stl',
-  bin:'application/octet-stream',
-  pdf:'application/pdf',
-  yaml:'text/yaml',
-  tex:'application/x-tex',
+const server = serve({ hostname, port })
+log(`on http://localhost:${port}/`)
+for await (const req of server){
+  handle(req)
 }
