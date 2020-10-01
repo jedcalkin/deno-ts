@@ -27,7 +27,7 @@ export const returns = {
   getMime,
 }
 
-function code(statusCode: number=500, body: string='', head: Head={}): FileResponse {
+function code(statusCode: number=500, body: string | Uint8Array='', head: Head={}): FileResponse {
   const headers = new Headers()
   headers.set('content-length', String(body.length))
   for(let header in head){

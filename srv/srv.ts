@@ -82,7 +82,6 @@ async function rest(req: any, CONFIG: {[k:string]: any}){
         return req.respond(returns[400]())
       }
   }
-  let mime = returns.getMime(url) || 'text/html'
   return req.respond(await returns.file(CONFIG.fileRoot, url, CONFIG.gz))
 }
 
