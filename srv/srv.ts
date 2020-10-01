@@ -69,7 +69,6 @@ async function rest(req: any, CONFIG: {[k:string]: any}){
       try {
         const file = await get(url2)
         let mime = returns.getMime(url2)
-        log(mime)
         return req.respond(returns[200](file, { 'Content-Type': mime }))
       } catch (err){
           console.log(err)
