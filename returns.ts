@@ -1,3 +1,5 @@
+const log = console.log
+
 interface Mimes {
   [ext: string]: string;
 }
@@ -5,7 +7,7 @@ interface Mimes {
 interface FileResponse {
   statusCode?: number;
   headers?: Headers;
-  body: string;
+  body: string | Uint8Array;
 }
 interface Head {
   [keys: string]: string;
@@ -52,10 +54,12 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
     }
 
     if(type.startsWith('image') || type.startsWith('video')){
-      let file = await Deno.readFile(`${root}${path}`)
+      const filePath = decodeURI(`${root}${path}`)
+      const file = await Deno.readFile(filePath)
       return code( 200, file, header)
     } else {
-      let file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
+      const filePath = decodeURI(`${root}${path}${gz?'.gz':''}`)
+      const file = await Deno.readTextFile(filePath)
       if(gz){
         header['Content-Encoding'] = 'gzip'
       }
