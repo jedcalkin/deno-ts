@@ -51,12 +51,11 @@ async function readFile(root: string, path: string, gz: boolean=true): Promise<F
       header['Content-Type'] = type
     }
 
-    let file = ''
     if(type.startsWith('image') || type.startsWith('video')){
-      file = await Deno.readFile(`${root}${path}`)
-      return code( 200, new Uint8Array(file), header)
+      let file = await Deno.readFile(`${root}${path}`)
+      return code( 200, file, header)
     } else {
-      file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
+      let file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
       if(gz){
         header['Content-Encoding'] = 'gzip'
       }
