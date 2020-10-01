@@ -1,5 +1,5 @@
-const log = console.log
 
+const log = console.log
 import { serve } from 'https://deno.land/std/http/server.ts'
 import {
   acceptWebSocket, WebSocket
@@ -82,7 +82,8 @@ async function rest(req: any, CONFIG: {[k:string]: any}){
         return req.respond(returns[400]())
       }
   }
-  req.respond(await returns.file(CONFIG.fileRoot, url, CONFIG.gz))
+  let mime = returns.getMime(url) || 'text/html'
+  return req.respond(await returns.file(CONFIG.fileRoot, url, CONFIG.gz))
 }
 
 const connections: {[uid: string]: WebSocket } = {}

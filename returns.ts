@@ -44,18 +44,25 @@ function js302(redirect: string, url: string='/'): FileResponse {
 async function readFile(root: string, path: string, gz: boolean=true): Promise<FileResponse> {
   path = path.split('?')[0]
   try{
-    let file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
-
     let header: Head = {}
     const extension = path.split('.').pop() || 'none'
     const type = mimes[extension]
     if(type!=null && extension.length<=6){
       header['Content-Type'] = type
     }
-    if(gz){
-      header['Content-Encoding'] = 'gzip'
+
+    let file = ''
+    if(type.startsWith('image') || type.startsWith('video')){
+      file = await Deno.readFile(`${root}${path}`)
+      return code( 200, new Uint8Array(file), header)
+    } else {
+      file = await Deno.readTextFile(`${root}${path}${gz?'.gz':''}`)
+      if(gz){
+        header['Content-Encoding'] = 'gzip'
+      }
+      return code( 200, file, header)
     }
-    return code( 200, file, header)
+
   } catch (err) {
     if(gz){
       return await readFile(root, path, false)
