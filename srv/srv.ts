@@ -1,9 +1,7 @@
 
 const log = console.log
 import { serve } from 'https://deno.land/std/http/server.ts'
-import {
-  acceptWebSocket, WebSocket
-} from "https://deno.land/std/ws/mod.ts";
+import { acceptWebSocket, WebSocket } from "https://deno.land/std/ws/mod.ts";
 import { returns } from 'https://jedcalkin.github.io/deno-ts/returns.ts'
 import args from "https://jedcalkin.github.io/deno-ts/args.ts"
 import { get } from "https://jedcalkin.github.io/deno-ts/get.ts"
@@ -11,21 +9,21 @@ import { get } from "https://jedcalkin.github.io/deno-ts/get.ts"
 const config = await args()
 
 const overrides = {
-    '/': '/index.html',
-    '/favicon.ico': 'https://jedc.nz/favicon.ico'
+  '/': '/index.html',
+  '/favicon.ico': 'https://jedc.nz/favicon.ico'
 }
 
 const excludes: string[] = [
-    '\\.php$',
-    '\\.jsp$',
-    '\\.asp$',
-    '\\.xml$',
-    '\\.git/',
-    '/\\.\\./'
+  '\\.php$',
+  '\\.jsp$',
+  '\\.asp$',
+  '\\.xml$',
+  '\\.git/',
+  '/\\.\\./'
 ]
 
 const port = Number(config.port)
-const CONFIG = {
+const CONFIG: {[key: string]: any} = {
   fileRoot: config.root || '.',
   port: !isNaN(port) ? port : 8070,
   hostname: config.host || 'localhost',
@@ -33,13 +31,31 @@ const CONFIG = {
   gz: config.gz || false,
   overrides: config.overrides || overrides,
   excludes: config.excludes || excludes,
-  verbose: config.v || false
+  verbose: config.v || false,
+  proxy: undefined
 }
+
+if(config.proxy) {
+  const [ path, to ] = config.proxy.split(';')
+  CONFIG.proxy = { path, to }
+}
+
 if(config.index) {
-    CONFIG.overrides['/'] = config.index
+  CONFIG.overrides['/'] = config.index
 }
 
 if(CONFIG.verbose) { log(CONFIG) }
+
+async function remoteGet(url: string){
+  try {
+    const file = await get(url)
+    let mime = returns.getMime(url)
+    return returns[200](file, { 'Content-Type': mime })
+  } catch (err){
+    console.log(err)
+    return returns[404]()
+  }
+}
 
 async function rest(req: any, CONFIG: {[k:string]: any}){
   let url = req.url
@@ -66,20 +82,18 @@ async function rest(req: any, CONFIG: {[k:string]: any}){
   if(CONFIG.overrides[url]){
     let url2 = CONFIG.overrides[url]
     if(CONFIG.verbose) { log(`${url} -> ${url2}`) }
-      try {
-        const file = await get(url2)
-        let mime = returns.getMime(url2)
-        return req.respond(returns[200](file, { 'Content-Type': mime }))
-      } catch (err){
-          console.log(err)
-          return req.respond(returns[404]())
-      }
+    return req.respond(await remoteGet(url2))
+  }
+  if(CONFIG.proxy && url.startsWith(CONFIG.proxy.path)){
+    let url3 = `${CONFIG.proxy.to}${url.split(CONFIG.proxy.path)[1]}`
+    if(CONFIG.verbose) { log(`${url} => ${url3}`) }
+    return req.respond(await remoteGet(url3))
   }
   for(let ex of CONFIG.excludes){
-      if(url.match(ex)){
-        if(CONFIG.verbose) { log(`ex ${url}`) }
-        return req.respond(returns[400]())
-      }
+    if(url.match(ex)){
+      if(CONFIG.verbose) { log(`ex ${url}`) }
+      return req.respond(returns[400]())
+    }
   }
   return req.respond(await returns.file(CONFIG.fileRoot, url, CONFIG.gz))
 }
