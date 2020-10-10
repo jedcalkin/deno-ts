@@ -1,8 +1,0 @@
-{
-  "port": 12120,
-  "pages": {
-    "/": "www/index.html",
-    "/control-1": "www/control-1.html",
-    "/display-1": "www/display-1.html"
-  }
-}
