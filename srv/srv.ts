@@ -36,8 +36,17 @@ const CONFIG: {[key: string]: any} = {
 }
 
 if(config.proxy) {
-  const [ path, to ] = config.proxy.split(';')
-  CONFIG.proxy = { path, to }
+  let px: {[path: string]: string } = {}
+  const items = config.proxy.split(';')
+
+  console.log(items)
+  for(let i=0;i<items.length;i+=2){
+    console.log([i, items[i],items[i+1]])
+    if(!items[i+1]){continue}
+    px[items[i]] = items[i+1]
+  }
+
+  CONFIG.proxy = px
 }
 
 if(config.index) {
@@ -84,10 +93,14 @@ async function rest(req: any, CONFIG: {[k:string]: any}){
     if(CONFIG.verbose) { log(`${url} -> ${url2}`) }
     return req.respond(await remoteGet(url2))
   }
-  if(CONFIG.proxy && url.startsWith(CONFIG.proxy.path)){
-    let url3 = `${CONFIG.proxy.to}${url.split(CONFIG.proxy.path)[1]}`
-    if(CONFIG.verbose) { log(`${url} => ${url3}`) }
-    return req.respond(await remoteGet(url3))
+  if(CONFIG.proxy){
+    for(const path in CONFIG.proxy){
+      if(url.startsWith(path)){
+        let url3 = `${CONFIG.proxy[path]}${url.split(path)[1]}`
+        if(CONFIG.verbose) { log(`${url} => ${url3}`) }
+        return req.respond(await remoteGet(url3))
+      }
+    }
   }
   for(let ex of CONFIG.excludes){
     if(url.match(ex)){
